@@ -1,5 +1,5 @@
 ---
-name: noma-agent-skills
+name: nomacms-agent-skills
 description: >-
   Routes Noma CMS (@nomacms/js-sdk) work to the correct skill package in this
   repository. Use when the user works with Noma, nomacms, this skills repo, or

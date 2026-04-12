@@ -26,16 +26,16 @@ This repository uses root-level skill directories so any supported agent can ins
 
 ```bash
 # List skills available in this repository
-npx skills add nomacms/noma-agent-skills --list
+npx skills add nomacms/nomacms-agent-skills --list
 
 # Install all skills for detected agents
-npx skills add nomacms/noma-agent-skills --skill '*'
+npx skills add nomacms/nomacms-agent-skills --skill '*'
 
 # Install specific skills
-npx skills add nomacms/noma-agent-skills --skill noma-sdk-setup --skill noma-content
+npx skills add nomacms/nomacms-agent-skills --skill noma-sdk-setup --skill noma-content
 
 # Install only for Cursor
-npx skills add nomacms/noma-agent-skills --skill '*' -a cursor
+npx skills add nomacms/nomacms-agent-skills --skill '*' -a cursor
 ```
 
 Project-local install is the default. Use `-g` for global installs.
@@ -53,7 +53,7 @@ If discovery works, you should see all Noma skills listed.
 ## Repository Structure
 
 ```text
-noma-agent-skills/
+nomacms-agent-skills/
 ├── README.md
 ├── SKILL.md                    # router: which skill package to open
 ├── noma-sdk-setup/
