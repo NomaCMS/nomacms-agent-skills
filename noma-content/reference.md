@@ -167,8 +167,9 @@ client.content.versions.updateLabel(
 
 - OR groups:
   - `where: { or: [{ category: { eq: 'shoes' } }, { category: { eq: 'boots' } }] }`
-- Relation filters:
+- Relation filters — outer key is the **relation field’s name** on the **current** collection; inner keys are **custom field names on the related entry** (not free-form labels). Example: if the related collection has a field slug `name`, then:
   - `where: { category: { name: 'Apparel' } }`
+  If that field is slug `title`, use `{ category: { title: 'Apparel' } }` instead.
 
 ## Filterable Core Columns
 
@@ -177,6 +178,26 @@ client.content.versions.updateLabel(
 ## Entry JSON shape
 
 Each entry has **`fields`**: `{ [fieldName]: value }` for custom fields. **`data`** is only the key in **request bodies** for create/update/patch (`{ data: { title: '...' } }`), not a property on returned entries.
+
+## Relation fields
+
+### Reads (`fields` on list/get)
+
+- **One-to-one** (`options.relation.type === 1`): value is **`null`** or a **nested entry object** (same shape as a normal `get` response: `uuid`, `locale`, `published_at`, `fields`, …).
+- **One-to-many** (`type === 2`): value is **`null`**, or an **array** of those nested entry objects (order matches the stored relation order).
+
+Draft reads resolve links from live relation rows; `state: 'published'` hydrates from the snapshot the same way.
+
+### Writes (`data` on create / update / patch)
+
+Send **only** how to reference the related row(s):
+
+- **One-to-one:** a single **UUID string**, a numeric **id**, or `null` / omit (subject to `required` and PATCH vs PUT semantics).
+- **One-to-many:** an **array** of UUID strings and/or numeric ids (empty array clears the list when the field is present in the payload).
+
+The API resolves each reference to a `ContentEntry` by **uuid** or **id**, scoped to the **project** and, when the field defines a target collection, to that collection only. Invalid references produce **422** validation on that field.
+
+**Do not** round-trip the **nested entry object** from a `GET` as the write value (e.g. `{ uuid, fields, ... }` is not accepted — pass `entry.uuid` or `entry.id` only). If you merge `GET` output into `data`, strip relation values down to ids/uuids first.
 
 ## Richtext fields
 

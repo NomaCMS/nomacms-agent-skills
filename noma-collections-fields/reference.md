@@ -49,3 +49,30 @@ options: {
 - **`html`** — API returns **HTML** generated from that markdown (sanitized).
 
 On **writes** (create/update content), always send richtext values as a **string** (markdown), never Lexical JSON or `{ html, json }` objects.
+
+## Relation fields (`type: 'relation'`)
+
+Relation fields point to **other content entries** in the same project. Define them with `options.relation`:
+
+```typescript
+await client.fields.create('products', {
+  name: 'Category',
+  slug: 'category',
+  type: 'relation',
+  required: false,
+  options: {
+    relation: {
+      /** Target collection: positive integer id, or slug / name string (normalized server-side to an id) */
+      collection: 'categories',
+      /** 1 = one-to-one (single related entry), 2 = one-to-many (ordered list) */
+      type: 1,
+    },
+    /** Optional: when true, relation pickers / queries may include draft entries (dashboard behavior). */
+    includeDraft: false,
+  },
+});
+```
+
+- After create/update, the API stores `options.relation.collection` as a **numeric collection id** when the target resolves inside the project (slug/name strings are accepted on input).
+- **Cardinality:** `type: 1` — reads return **one** nested entry object (or `null`). `type: 2` — reads return an **array** of nested entry objects.
+- Content **writes** must send **entry UUID strings** and/or **numeric entry ids**, not full entry objects from `GET` responses. See **`noma-content`** (“Relation fields” on reads vs writes).

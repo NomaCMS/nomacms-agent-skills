@@ -72,6 +72,27 @@ await client.content.patch('blog-posts', 'entry-uuid', {
 await client.content.delete('blog-posts', 'entry-uuid', true);
 ```
 
+## Relation field writes (UUID / id only)
+
+`GET` returns nested `fields.category` as an entry object (or array for one-to-many). `POST`/`PUT`/`PATCH` expect **references**, not that object:
+
+```typescript
+const post = await client.content.get('blog-posts', 'entry-uuid', { state: 'draft' });
+const category = post.fields.category; // { uuid, locale, fields: { ... }, ... } | null
+
+await client.content.patch('blog-posts', 'entry-uuid', {
+  data: {
+    category: category?.uuid ?? null, // correct
+    // data: { category } — wrong: full object is not accepted
+  },
+});
+
+// One-to-many: array of UUIDs
+await client.content.patch('blog-posts', 'entry-uuid', {
+  data: { related_tags: ['uuid-a', 'uuid-b'] },
+});
+```
+
 ## Link two entries as translations (repeating collection)
 
 After creating separate rows per locale, merge them so `get` with `translation_locale` works:
