@@ -62,7 +62,7 @@ const item = await client.content.get('blog-posts', 'entry-uuid');
 
 await client.content.create('blog-posts', {
   data: { title: 'My Post', body: '## Markdown body\n\nParagraph.' },
-  state: 'draft',
+  state: 'draft', // 'published' on create is allowed (publish-on-create)
 });
 
 await client.content.patch('blog-posts', 'entry-uuid', {
@@ -71,6 +71,55 @@ await client.content.patch('blog-posts', 'entry-uuid', {
 
 await client.content.delete('blog-posts', 'entry-uuid');
 ```
+
+## Save vs. Publish (always two steps for existing entries)
+
+**Saves never change publish state.** `content.update`, `content.patch`, and `content.bulkUpdate` only mutate the draft fields and mark the draft as dirty. They never mint a new version and never unpublish. `state` is no longer part of the update payload.
+
+To change visibility, use the explicit actions:
+
+```typescript
+await client.content.patch('blog-posts', 'entry-uuid', {
+  data: { title: 'New title' }, // draft-only; state=published keeps serving the last snapshot
+});
+
+// Mint a new version from the current draft and make it live:
+await client.content.publish('blog-posts', 'entry-uuid');
+
+// Hide the entry from state=published reads (versions are retained):
+await client.content.unpublish('blog-posts', 'entry-uuid');
+```
+
+`state: 'published'` is still accepted by `content.create` / `content.bulkCreate` — publishing on initial creation is a single-call flow.
+
+## Draft / Published reads (versioning)
+
+Noma follows a working-draft + published-snapshot model:
+
+- `state: 'published'` on `list`/`get` reads from the **most recently published version snapshot** — immutable, safe for public sites. An entry that has **never been published** (or was later unpublished) returns **404** under `state=published`, even if a draft exists.
+- `state: 'draft'` returns the **live draft** field values (used for previews/editors).
+- Editing a published entry does **not** change what `state=published` returns until you call `content.publish()`. The dashboard surfaces an "Unpublished changes" pill while the draft diverges.
+
+```typescript
+const publicCopy = await client.content.get('blog-posts', 'entry-uuid', { state: 'published' });
+const previewCopy = await client.content.get('blog-posts', 'entry-uuid', { state: 'draft' });
+```
+
+## Versions
+
+Every publish creates an immutable version. Use the versions namespace to audit and roll back:
+
+```typescript
+const versions = await client.content.versions.list('blog-posts', 'entry-uuid');
+const v2 = await client.content.versions.get('blog-posts', 'entry-uuid', 2);
+await client.content.versions.revert('blog-posts', 'entry-uuid', 2); // mints v3 from v2
+await client.content.versions.updateLabel('blog-posts', 'entry-uuid', 2, {
+  label: 'Launch copy v2',
+  description: 'Approved by marketing.',
+});
+```
+
+Retention is plan-based (Basic 10, Grow 50, Pro unlimited); the currently published version is always kept.
 
 ## Filtering
 

@@ -80,22 +80,70 @@ client.content.linkTranslation(collectionSlug: string, uuid: string, payload: {
 
 Singleton creates already auto-link; use this mainly for **repeating** collections when you created locale rows separately.
 
-## Create / Update / Patch Payload
+## Create Payload
 
 ```typescript
 {
   data: Record<string, unknown>;
   locale?: string;
-  state?: 'draft' | 'published';
+  state?: 'draft' | 'published'; // 'published' publishes on create (one-step)
   published_at?: string; // ISO 8601
 }
 ```
 
+## Update / Patch Payload
+
+```typescript
+{
+  data: Record<string, unknown>;
+  locale?: string;
+  published_at?: string; // ISO 8601
+}
+```
+
+> Update / patch **do not** accept `state`. Saves always leave the currently published version alone. Use `content.publish(...)` / `content.unpublish(...)` to change visibility.
+
+## `publish(collectionSlug, uuid)` / `unpublish(collectionSlug, uuid)`
+
+```typescript
+client.content.publish(collectionSlug: string, uuid: string);
+client.content.unpublish(collectionSlug: string, uuid: string);
+```
+
+- `publish` mints a new immutable version from the current draft and makes it the live snapshot served under `state=published`. Returns `{ message, version_number, entry }`.
+- `unpublish` clears the live pointer. All historical versions are retained and still accessible via the versions namespace. Returns `{ message }`.
+- **HTTP:** `POST /api/{collection}/{uuid}/publish` and `POST /api/{collection}/{uuid}/unpublish`. Both require the `update` ability.
+
 ## Bulk Methods
 
-- `bulkCreate(collectionSlug, { items })`
-- `bulkUpdate(collectionSlug, { items })`
+- `bulkCreate(collectionSlug, { items })` — each item may include `state: 'published'` to publish on create.
+- `bulkUpdate(collectionSlug, { items })` — items do **not** accept `state`; saves never change publish state. Call `publish` per UUID if needed.
 - `bulkDelete(collectionSlug, { uuids, force? })`
+
+## Versions (`client.content.versions.*`)
+
+```typescript
+client.content.versions.list(collectionSlug: string, uuid: string);
+client.content.versions.get(collectionSlug: string, uuid: string, versionNumber: number);
+client.content.versions.revert(collectionSlug: string, uuid: string, versionNumber: number);
+client.content.versions.updateLabel(
+  collectionSlug: string,
+  uuid: string,
+  versionNumber: number,
+  payload: { label?: string | null; description?: string | null }
+);
+```
+
+- `list` returns `{ data: VersionSummary[], is_draft_dirty, published_version_number }`. Newest first.
+- `get` returns metadata plus the raw `snapshot` (`{ fields, meta }`). For API-rendered field output, call `content.get(..., { state: 'published' })` instead.
+- `revert` restores the draft to that version's snapshot and mints a new published version (the new version is returned as `new_version_number`).
+- `updateLabel` mutates only `label` / `description`; snapshot payloads remain immutable.
+
+**State semantics (reads):** `state: 'published'` reads the currently published version's snapshot — a **404** is returned when an entry has never been published, or after `content.unpublish(...)`. `state: 'draft'` reads live draft values from entries whose `state` column is `draft`. Editing a published entry does not change what `state=published` returns until you call `content.publish(...)`; the dashboard shows an "Unpublished changes" pill while the draft diverges.
+
+**Retention:** plan-based cap (Basic 10, Grow 50, Pro unlimited). The currently published version is never pruned.
+
+**Auth abilities:** `read` for `list`/`get`; `update` for `revert` and `updateLabel`.
 
 ## `where` Operators
 

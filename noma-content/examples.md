@@ -127,13 +127,78 @@ await client.content.bulkCreate('blog-posts', {
 
 await client.content.bulkUpdate('blog-posts', {
   items: [
-    { uuid: 'uuid-1', data: { title: 'Updated 1' }, state: 'published' },
+    // `state` is not a field on bulkUpdate — saves never change publish state.
+    { uuid: 'uuid-1', data: { title: 'Updated 1' } },
     { uuid: 'uuid-2', data: { title: 'Updated 2' } },
   ],
 });
+
+// Publish individual UUIDs afterwards if you need the edits to go live:
+await client.content.publish('blog-posts', 'uuid-1');
 
 await client.content.bulkDelete('blog-posts', {
   uuids: ['uuid-1', 'uuid-2', 'uuid-3'],
   force: false,
 });
+```
+
+## Published vs Draft reads
+
+```typescript
+// Public site: read from the most recently published snapshot.
+// An entry that has never been published (or was unpublished) returns 404 here.
+const live = await client.content.get('blog-posts', 'entry-uuid', { state: 'published' });
+
+// Preview / editor: read the live working draft (includes unpublished edits).
+const draft = await client.content.get('blog-posts', 'entry-uuid', { state: 'draft' });
+```
+
+## Save a draft without touching the published version
+
+```typescript
+// Update only mutates the draft — the last published version keeps serving state=published.
+await client.content.patch('blog-posts', 'entry-uuid', {
+  data: { title: 'Work-in-progress title' },
+});
+
+const live = await client.content.get('blog-posts', 'entry-uuid', { state: 'published' });
+// -> still returns the previously published snapshot.
+
+// When the copy is ready, publish explicitly to mint v(N+1):
+await client.content.publish('blog-posts', 'entry-uuid');
+
+// Later, take it offline without deleting history:
+await client.content.unpublish('blog-posts', 'entry-uuid');
+```
+
+## Listing and labeling versions
+
+```typescript
+const { data: versions, is_draft_dirty, published_version_number } =
+  await client.content.versions.list('blog-posts', 'entry-uuid');
+
+// Annotate the current version for teammates
+await client.content.versions.updateLabel('blog-posts', 'entry-uuid', published_version_number, {
+  label: 'Launch copy v2',
+  description: 'Approved by marketing — do not revert past this point.',
+});
+```
+
+## Reverting to a previous version
+
+```typescript
+const { new_version_number } = await client.content.versions.revert(
+  'blog-posts',
+  'entry-uuid',
+  2,
+);
+// Snapshot for v2 is restored into the working draft and re-published as a new version.
+```
+
+## Inspecting a version snapshot (raw payload)
+
+```typescript
+const v2 = await client.content.versions.get('blog-posts', 'entry-uuid', 2);
+// v2.snapshot is the raw restoration payload: { fields: { … }, meta: { locale, translation_group_id } }
+// For rendered field output (media/relations hydrated), call content.get with state: 'published'.
 ```
