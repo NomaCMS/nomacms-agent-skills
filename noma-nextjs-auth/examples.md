@@ -10,12 +10,11 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
 function nomaClient() {
-  const baseUrl = process.env.NOMA_BASE_URL;
   const projectId = process.env.NOMA_PROJECT_ID;
-  if (!baseUrl || !projectId) {
+  if (!projectId) {
     return null;
   }
-  return createClient({ baseUrl, projectId });
+  return createClient({ projectId });
 }
 
 async function refreshNomaToken(token: any) {
@@ -129,9 +128,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const secret = process.env.AUTH_SECRET;
-  const baseUrl = process.env.NOMA_BASE_URL;
   const projectId = process.env.NOMA_PROJECT_ID;
-  if (!secret || !baseUrl || !projectId) {
+  if (!secret || !projectId) {
     return NextResponse.json({ error: "Misconfigured" }, { status: 500 });
   }
 
@@ -144,7 +142,6 @@ export async function POST(req: NextRequest) {
   }
 
   const client = createClient({
-    baseUrl,
     projectId,
     projectUserAuth: {
       accessToken,

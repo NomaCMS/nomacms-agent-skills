@@ -20,7 +20,6 @@ npm install @nomacms/js-sdk
 import { createClient } from '@nomacms/js-sdk';
 
 const client = createClient({
-  baseUrl: 'https://your-noma-instance.com/api',
   projectId: 'your-project-uuid',
   apiKey: 'your-api-key',
   timeout: 30000, // optional, defaults to 30000ms
@@ -35,7 +34,6 @@ const client = createClient({
 
 ```typescript
 const client = createClient({
-  baseUrl: process.env.NOMA_BASE_URL!,
   projectId: process.env.NOMA_PROJECT_ID!,
   apiKey: process.env.NOMA_API_KEY!,
 });
@@ -45,7 +43,6 @@ const client = createClient({
 
 ```typescript
 const client = createClient({
-  baseUrl: process.env.NEXT_PUBLIC_NOMA_BASE_URL!,
   projectId: process.env.NEXT_PUBLIC_NOMA_PROJECT_ID!,
   projectUserAuth: {
     autoRefresh: true,
@@ -70,7 +67,7 @@ Configure **which locale codes exist** on the project **before** creating transl
 ```typescript
 console.log(client.getDebugInfo());
 // {
-//   basePath: 'https://your-instance.com/api',
+//   basePath: 'https://app.nomacms.com/api',
 //   projectId: 'xxxxxxxx-...',
 //   timeout: 30000,
 //   hasApiKey: true,

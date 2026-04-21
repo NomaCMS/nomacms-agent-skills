@@ -56,7 +56,6 @@ export async function POST(request: NextRequest) {
   }
 
   const client = createClient({
-    baseUrl: process.env.NOMA_BASE_URL!,
     projectId: process.env.NOMA_PROJECT_ID!,
   });
 

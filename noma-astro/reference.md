@@ -3,14 +3,14 @@
 ## Environment Variables
 
 ```env
-NOMA_BASE_URL=https://your-instance.com/api
 NOMA_PROJECT_ID=your-project-uuid
 NOMA_API_KEY=your-api-key
 # User settings → API keys (Sanctum PAT)
 
-PUBLIC_NOMA_BASE_URL=https://your-instance.com/api
 PUBLIC_NOMA_PROJECT_ID=your-project-uuid
 ```
+
+The SDK always uses **Noma SaaS** at `https://app.nomacms.com/api`. Do not set `NOMA_BASE_URL` or `PUBLIC_NOMA_BASE_URL`.
 
 Use non-`PUBLIC_` variables only on the server.
 

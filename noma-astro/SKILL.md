@@ -15,7 +15,6 @@ description: >-
 import { createClient } from '@nomacms/js-sdk';
 
 export const noma = createClient({
-  baseUrl: import.meta.env.NOMA_BASE_URL,
   projectId: import.meta.env.NOMA_PROJECT_ID,
   // API key: User settings → API keys
   apiKey: import.meta.env.NOMA_API_KEY,

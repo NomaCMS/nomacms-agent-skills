@@ -19,7 +19,6 @@ Use separate clients for server and browser contexts:
 import { createClient } from '@nomacms/js-sdk';
 
 export const nomaServer = createClient({
-  baseUrl: process.env.NOMA_BASE_URL!,
   projectId: process.env.NOMA_PROJECT_ID!,
   // API key from User settings → API keys (not an end-user uak_ key)
   apiKey: process.env.NOMA_API_KEY!,
@@ -32,7 +31,6 @@ import { createClient } from '@nomacms/js-sdk';
 
 export function createBrowserClient() {
   return createClient({
-    baseUrl: process.env.NEXT_PUBLIC_NOMA_BASE_URL!,
     projectId: process.env.NEXT_PUBLIC_NOMA_PROJECT_ID!,
     projectUserAuth: {
       autoRefresh: true,

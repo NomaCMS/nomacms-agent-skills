@@ -4,15 +4,15 @@
 
 ```env
 # Server-only (not prefixed with NEXT_PUBLIC_)
-NOMA_BASE_URL=https://your-instance.com/api
 NOMA_PROJECT_ID=your-project-uuid
 NOMA_API_KEY=your-api-key
 # Create under User settings → API keys (Sanctum PAT)
 
-# Client-safe (prefixed)
-NEXT_PUBLIC_NOMA_BASE_URL=https://your-instance.com/api
+# Client-safe (prefixed) — project user auth only needs project id
 NEXT_PUBLIC_NOMA_PROJECT_ID=your-project-uuid
 ```
+
+The SDK always calls **Noma** at `https://app.nomacms.com/api`. Do not add `NOMA_BASE_URL` or `NEXT_PUBLIC_NOMA_BASE_URL`.
 
 ## App Router Data Fetching
 
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
 
 ## Social login
 
-Complete OAuth with the provider in the browser, then **POST** the `id_token` to your own Route Handler that calls `createClient({ baseUrl, projectId }).signInWithSocial({ provider: 'google', id_token })` and sets session cookies. See [examples.md](examples.md).
+Complete OAuth with the provider in the browser, then **POST** the `id_token` to your own Route Handler that calls `createClient({ projectId }).signInWithSocial({ provider: 'google', id_token })` and sets session cookies. See [examples.md](examples.md).
 
 ## Middleware Pattern
 

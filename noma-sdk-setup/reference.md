@@ -4,7 +4,6 @@
 
 ```typescript
 interface CreateClientOptions {
-  baseUrl: string;
   projectId: string;
   apiKey?: string;
   /** @deprecated Use `apiKey`. */
@@ -45,14 +44,14 @@ The SDK does not read environment variables directly; pass them into `createClie
 
 | Variable | Purpose |
 |----------|---------|
-| `NOMA_BASE_URL` | API base URL (for example `https://domain.com/api`) |
 | `NOMA_PROJECT_ID` | Project UUID |
 | `NOMA_API_KEY` | API key from **User settings → API keys** (server-only; same as MCP `NOMA_API_KEY`) |
+
+SDK always uses `https://app.nomacms.com/api`. There is no `baseUrl`, `NOMA_BASE_URL`, or `NEXT_PUBLIC_NOMA_BASE_URL`. Browser apps with project user auth only need **`NEXT_PUBLIC_NOMA_PROJECT_ID`** (plus token storage), not a public API URL.
 
 If you still use older env names, map them explicitly, e.g. `apiKey: process.env.NOMA_CMS_API_TOKEN ?? process.env.NOMA_PROJECT_API_TOKEN`.
 
 ```env
-NOMA_BASE_URL=https://your-instance.com/api
 NOMA_PROJECT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 NOMA_API_KEY=your-secret-key
 ```

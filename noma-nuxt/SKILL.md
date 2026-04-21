@@ -26,7 +26,6 @@ export default defineNuxtPlugin(() => {
   };
 
   const client = createClient({
-    baseUrl: config.public.nomaBaseUrl,
     projectId: config.public.nomaProjectId,
     projectUserAuth: { autoRefresh: true, tokenStorage },
   });

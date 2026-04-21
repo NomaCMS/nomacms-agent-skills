@@ -11,7 +11,6 @@ export function useNomaServer() {
   if (!_client) {
     const config = useRuntimeConfig();
     _client = createClient({
-      baseUrl: config.nomaBaseUrl,
       projectId: config.nomaProjectId,
       apiKey: config.nomaApiKey,
     });
@@ -25,12 +24,10 @@ export function useNomaServer() {
 ```typescript
 export default defineNuxtConfig({
   runtimeConfig: {
-    nomaBaseUrl: process.env.NOMA_BASE_URL,
     nomaProjectId: process.env.NOMA_PROJECT_ID,
     // Sanctum PAT from User settings → API keys
     nomaApiKey: process.env.NOMA_API_KEY,
     public: {
-      nomaBaseUrl: process.env.NOMA_BASE_URL,
       nomaProjectId: process.env.NOMA_PROJECT_ID,
     },
   },
@@ -118,7 +115,7 @@ export default defineNuxtConfig({
 
 ## Social login (Nitro)
 
-After the browser completes Google (or another supported) OAuth, **POST** the provider `id_token` to a Nitro API route. Use `createClient({ baseUrl, projectId })` **without** `apiKey` and call `signInWithSocial({ provider: 'google', id_token, nonce? })`, then set an HTTP-only session cookie. See `noma-user-auth` and `noma-nextjs` examples for the same pattern.
+After the browser completes Google (or another supported) OAuth, **POST** the provider `id_token` to a Nitro API route. Use `createClient({ projectId })` **without** `apiKey` and call `signInWithSocial({ provider: 'google', id_token, nonce? })`, then set an HTTP-only session cookie. See `noma-user-auth` and `noma-nextjs` examples for the same pattern.
 
 ## Auth Guard + Pinia
 
