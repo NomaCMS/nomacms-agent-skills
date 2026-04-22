@@ -15,7 +15,7 @@ When the user asks to build a **website, landing page, or app backed by Noma** a
 ## Mandatory workflow
 
 1. **Infer schema from the page plan**  
-   Map each section to collections: singletons for one-off page copy (hero, footer blurb, global nav labels) vs repeating rows (feature cards, testimonials, footer links). Choose **stable slugs** (kebab-case) the app will query.
+   Map each section to collections: singletons for one-off page copy (hero, footer blurb, global nav labels) vs repeating rows (feature cards, testimonials, footer links). Choose **stable slugs** (kebab-case) the app will query. **Do not** add custom “published at” date fields for entries that only need a public timestamp — Noma already exposes **`published_at`** on every entry; duplicating it in **`fields`** is a common agent mistake (see **`noma-content`** and **`noma-collections-fields`**).
 
 2. **Use the Noma MCP before finishing the UI**  
    - List and read each tool’s JSON schema under your MCP descriptors folder **before** calling tools (required parameter names differ per server).  
@@ -35,6 +35,7 @@ When the user asks to build a **website, landing page, or app backed by Noma** a
 ```text
 Noma structure for this page/site:
 - [ ] Collections planned (slug + singleton vs list)
+- [ ] No redundant `published-at`-style fields (use `entry.published_at` unless a distinct editorial date is required)
 - [ ] Fields defined per collection
 - [ ] MCP tools invoked (or SDK fallback documented)
 - [ ] Optional: seed entries for smoke-test

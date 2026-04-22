@@ -38,6 +38,8 @@ The server branches on **`is_singleton`** from the collection record:
 
 **Agent rule:** read **`is_singleton`** from `collections.get(slug)` before interpreting `list()` results. Treating a singleton like a paginated list (e.g. expecting `response.data[0]` or `meta`) is wrong.
 
+**Agent rule (timestamps):** each entry includes **`published_at`** at the entry root. Prefer **`entry.published_at`** and `sort` on **`published_at`** / **`created_at`** for “when did this go live?” — do **not** introduce a custom field that only mirrors that unless the product needs a different semantic (documented in **`noma-content`** SKILL).
+
 **Singleton translations:** one entry per locale; **`POST /api/{collection}`** (and bulk create) **auto-links** new singleton rows to existing entries in other locales (shared **`translation_group_id`**). Use **`GET /api/{collection}/{uuid}?translation_locale=xx`** to fetch the linked row for another locale.
 
 ### Pagination

@@ -14,6 +14,12 @@ All methods are on `client.content.*`. Requires an API key (`apiKey` from **User
 
 List and get responses expose each entry as **`uuid`**, **`locale`**, **`published_at`**, and **`fields`** (an object of custom field values). There is no per-entry `data` property for field values — use **`entry.fields.title`**, not `entry.data.title`.
 
+### Built-in timestamps — do not re-model as custom fields
+
+Every entry already exposes **`published_at`** (and the API supports sorting by timestamps such as **`created_at`** / **`published_at`** on `list()` — see **`reference.md`**). **Do not** add redundant collection fields such as **`published-at`**, **`publish-date`**, or **`posted-at`** whose only job is “when this post went live.” That duplicates system metadata, drifts out of sync with **`publish()` / `unpublish()`**, and confuses implementers.
+
+**Only** add a separate date field when the product **explicitly** needs a value that **must differ** from Noma’s publish time (for example a backdated “display byline date” or a scheduled **teaser** date with different semantics). Name it clearly (e.g. **`display-date`**) and document why it is not `entry.published_at`.
+
 **Richtext fields** are stored as **markdown**. On **create/update/patch**, send a **string** (markdown). On **read**, the value is either **markdown** or **HTML** depending on the field’s `options.editor.outputFormat` in the collection schema (`markdown` vs `html`, default `html`).
 
 ## List response by collection type (critical)

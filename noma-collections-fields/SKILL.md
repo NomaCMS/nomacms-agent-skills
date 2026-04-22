@@ -51,6 +51,8 @@ await client.fields.reorder('blog-posts', {
 
 Use `collections.get()` to inspect current fields before schema updates.
 
+**System metadata vs custom fields:** Content entries already include **`published_at`** (and related timestamps) at the **entry root**, not inside **`fields`**. When designing a schema (blog posts, articles, pages), **do not** add a custom **`date` / `datetime` field** whose sole purpose is mirroring “published on” — use **`entry.published_at`** in the app and `sort: 'published_at:desc'` (or `created_at`) on `content.list()`. See **`noma-content`** (“Built-in timestamps — do not re-model as custom fields”). Add a separate date field only when editorial needs a **different** meaning than the API publish clock.
+
 **`is_singleton` drives list API behavior:** when **`is_singleton` is `true`**, `client.content.list(slug)` returns **one entry object** at the root (not an array, not paginated `{ data, meta }`). **`paginate` does not apply** to singletons. When **`is_singleton` is `false`**, `list()` can return a **top-level array**, a **paginated** payload with **`data` + `meta` + `links`**, **`{ count }`**, or a **single** entry with **`first: true`** — see **`noma-content`** for the matrix. Always check **`is_singleton`** before writing fetch/parsing code.
 
 Richtext fields use **`options.editor.outputFormat`**: `'html'` (default) or `'markdown'`. That controls how the Content API **returns** the field; **input** is always a markdown string. See [reference.md](reference.md).
