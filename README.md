@@ -1,6 +1,6 @@
-# Noma Agent Skills
+# NomaCMS Agent Skills
 
-Agent skills for [`@nomacms/js-sdk`](https://www.npmjs.com/package/@nomacms/js-sdk) and [Noma CMS](https://nomacms.com), organized for the [`skills`](https://www.npmjs.com/package/skills) ecosystem.
+Agent skills for [`@nomacms/js-sdk`](https://www.npmjs.com/package/@nomacms/js-sdk) and [NomaCMS](https://nomacms.com), organized for the [`skills`](https://www.npmjs.com/package/skills) ecosystem.
 
 This repository uses root-level skill directories so any supported agent can install from the same source.
 
@@ -14,9 +14,9 @@ This repository uses root-level skill directories so any supported agent can ins
 | **noma-user-auth** | Sign up/in (password + social `id_token`), refresh, auth state, user API keys |
 | **noma-auth-contract** | Canonical frontend auth contract and must-pass integration checklist |
 | **noma-nextjs-auth** | Next.js / NextAuth-specific auth implementation guardrails |
-| **noma-auth-review** | Audit existing auth implementations against the Noma auth contract |
+| **noma-auth-review** | Audit existing auth implementations against the NomaCMS auth contract |
 | **noma-collections-fields** | Collection and field schema management |
-| **noma-mcp-content-structure** | Schema-first Noma sites via MCP — collections/fields before UI (Next.js, Nuxt, Astro, or other SDK apps) |
+| **noma-mcp-content-structure** | Schema-first NomaCMS sites via MCP — collections/fields before UI (Next.js, Nuxt, Astro, or other SDK apps) |
 | **noma-errors** | Error hierarchy and try/catch patterns |
 | **noma-nextjs** | Next.js integration (RSC, SSG/ISR, server actions) |
 | **noma-nuxt** | Nuxt integration (server routes, Pinia, Nitro) |
@@ -48,12 +48,12 @@ From this repository root:
 npx skills add . --list
 ```
 
-If discovery works, you should see all Noma skills listed.
+If discovery works, you should see all NomaCMS skills listed.
 
 ## Repository Structure
 
 ```text
-nomacms-agent-skills/
+noma-agent-skills/
 ├── README.md
 ├── SKILL.md                    # router: which skill package to open
 ├── noma-sdk-setup/
@@ -100,5 +100,5 @@ Install only the skills relevant to your project:
 - **Media-heavy apps**: add `noma-assets`
 - **User-facing apps**: add `noma-user-auth`; for contract checks and audits add `noma-auth-contract`, framework auth skills (e.g. `noma-nextjs-auth`), and `noma-auth-review` when relevant
 - **Schema management**: add `noma-collections-fields`
-- **Cursor + Noma MCP**: add `noma-mcp-content-structure` so pages are not built as static-only sections (any framework)
+- **Cursor + NomaCMS MCP**: add `noma-mcp-content-structure` so pages are not built as static-only sections (any framework)
 - **Framework-specific**: add one of `noma-nextjs`, `noma-nuxt`, or `noma-astro`
