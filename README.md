@@ -53,7 +53,7 @@ If discovery works, you should see all NomaCMS skills listed.
 ## Repository Structure
 
 ```text
-noma-agent-skills/
+nomacms-agent-skills/
 ├── README.md
 ├── SKILL.md                    # router: which skill package to open
 ├── noma-sdk-setup/
